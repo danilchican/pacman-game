@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da9b358b_bea3279e",
+        "filename": "Game.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-03-28T05:53:04Z",
+      "side": 1,
+      "message": "больше комментов.для чего этот метод?",
+      "revId": "39cfdcc7adde7af300e4e2472837e4414f45e077",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da9b358b_beca074e",
+        "filename": "GamePlay.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-03-28T05:53:04Z",
+      "side": 1,
+      "message": "по мне,так было бы проще сделать все это одним методом,просто передавать в него,что конкретно ты хочешь проверить,но тут уж тебе решать",
+      "revId": "39cfdcc7adde7af300e4e2472837e4414f45e077",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da9b358b_7ec47f3f",
+        "filename": "LevelData.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-03-28T05:53:04Z",
+      "side": 1,
+      "message": "вот слабо было комментов добавить?)",
+      "revId": "39cfdcc7adde7af300e4e2472837e4414f45e077",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
