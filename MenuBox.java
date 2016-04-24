@@ -10,7 +10,26 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * The class wich contains menu box of menu items
+ * 
+ * @author Vlad Danilchik
+ *
+ */
 public class MenuBox extends StackPane {
+
+  private enum MenuStatus {
+    OPENED, CLOSED
+  }
+
+  private MenuStatus status = MenuStatus.OPENED;
+
+  /**
+   * MenuBox constructor
+   * 
+   * @param items to display the MenuBox
+   * @see MenuBox#MenuBox(MenuItem...)
+   */
   public MenuBox(MenuItem... items) {
 
     DropShadow shadow = new DropShadow(7, 5, 0, Color.BLACK);
@@ -33,49 +52,104 @@ public class MenuBox extends StackPane {
     getChildren().addAll(vbox);
   }
 
+  /**
+   * Show the menu box
+   * 
+   * @see MenuBox#show()
+   */
   public void show() {
+    this.status = MenuStatus.OPENED;
     setVisible(true);
     TranslateTransition trans = new TranslateTransition(Duration.seconds(0.5), this);
     trans.setToY(0);
     trans.play();
   }
 
+  /**
+   * Hide the menu box
+   * 
+   * @see MenuBox#hide()
+   */
   public void hide() {
+    this.status = MenuStatus.CLOSED;
     TranslateTransition trans = new TranslateTransition(Duration.seconds(0.5), this);
     trans.setToY(-600);
     trans.setOnFinished(event -> setVisible(false));
     trans.play();
   }
 
-  public static void setMenuOptions() {
+  /**
+   * Check opened menu
+   * 
+   * @return boolean
+   * @see MenuBox#isOpened()
+   */
+  public boolean isOpened() {
+    return (this.status == MenuStatus.OPENED);
+  }
 
+  /**
+   * Set menu options
+   * 
+   * @see MenuBox#setMenuOptions()
+   * 
+   */
+  public static void setMenuOptions() {
     Constants.main_scene.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ESCAPE) {
-        if (Constants.menu.isVisible()) {
-          Constants.menu.hide();
-        } else {
+        if (!(Constants.menu.isOpened()) && Constants.subMenuLevels.isOpened()) {
+          Constants.subMenuLevels.hide();
           Constants.menu.show();
-        }
+        } else if (Constants.menu.isOpened() && !(Constants.subMenuLevels.isOpened())) {
+          Constants.menu.hide();
+          Constants.subMenuLevels.show();
+        } else
+          System.out.println("other");
+
       }
     });
   }
 
+  /**
+   * Method wich draws menu
+   * 
+   * @return Parent
+   * @see MenuBox#drawMenu()
+   */
   public static Parent drawMenu() {
-    Constants.mainRoot.setPrefSize(1000, 600);
+    Constants.mainRoot.setPrefSize(Constants.screenWidth, Constants.screenHeight);
 
     Image im = new Image(MenuBox.class.getResourceAsStream("pacman.jpg"));
     ImageView img = new ImageView(im);
-    img.setFitWidth(1000);
-    img.setFitHeight(600);
+    img.setFitWidth(Constants.screenWidth);
+    img.setFitHeight(Constants.screenHeight);
 
     Constants.mainRoot.getChildren().add(img);
 
-    Constants.menu = new MenuBox(new MenuItem("RESUME GAME", MenuItem.RESUME_GAME),
-        new MenuItem("NEW GAME", MenuItem.NEW_GAME), new MenuItem("QUIT", MenuItem.QUIT));
+    Constants.menu = new MenuBox(new MenuItem("NEW GAME", MenuItem.Options.NEW_GAME),
+        new MenuItem("LEVELS", MenuItem.Options.LEVELS),
+        new MenuItem("PLAY_SAVED", MenuItem.Options.PLAY_SAVED),
+        new MenuItem("BOOT", MenuItem.Options.BOOT), new MenuItem("SAVES", MenuItem.Options.SAVES),
+        new MenuItem("QUIT", MenuItem.Options.QUIT));
 
     Constants.mainRoot.getChildren().add(Constants.menu);
 
     return Constants.mainRoot;
+  }
+
+  /**
+   * Method wich draw submenu levels
+   * 
+   * @see MenuBox#drawSubMenuLevels()
+   * 
+   */
+  public static void drawSubMenuLevels() {
+    Constants.subMenuLevels = new MenuBox(new MenuItem("LEVEL 1", MenuItem.Options.LEVEL_1),
+        new MenuItem("LEVEL 2", MenuItem.Options.LEVEL_2),
+        new MenuItem("BACK", MenuItem.Options.BACK));
+
+    Constants.mainRoot.getChildren().add(Constants.subMenuLevels);
+    Constants.subMenuLevels.hide();
   }
 
 }

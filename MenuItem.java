@@ -8,16 +8,28 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+/**
+ * Contains info about item menu
+ * 
+ * @author Vlad Danilchik
+ *
+ */
 public class MenuItem extends StackPane {
 
   private Rectangle menuRect;
 
-  public static final int RESUME_GAME = 0;
-  public static final int NEW_GAME = 1;
-  public static final int QUIT = 2;
+  public static enum Options {
+    NEW_GAME, LEVELS, BOOT, BACK, QUIT, LEVEL_1, LEVEL_2, SAVES, PLAY_SAVED
+  }
 
-  public MenuItem(String name, int type) {
-
+  /**
+   * MenuItem constructor
+   * 
+   * @param name for menu item
+   * @param type of menu
+   * @see MenuItem#MenuItem(String, Options)
+   */
+  public MenuItem(String name, Options type) {
     menuRect = new Rectangle(300, 30);
 
     menuRect.setFill(Color.WHITE);
@@ -64,19 +76,64 @@ public class MenuItem extends StackPane {
 
     setOnMouseReleased(event -> {
       text.setFill(Color.WHITE);
-
-      switch (type) {
-        case QUIT:
-          System.exit(0);
-          break;
-        case NEW_GAME:
-          GamePlay.startGame();
-          break;
-        default:
-          break;
-      }
+      setActionMenu(type);
     });
 
   }
+
+  /**
+   * Set action on menu item
+   * 
+   * @param type for setting action menu
+   * @see MenuItem#setActionMenu(Options)
+   */
+  private void setActionMenu(Options type) {
+    switch (type) {
+      case QUIT:
+        System.exit(0);
+        break;
+      case NEW_GAME:
+        GamePlay.startGame(1);
+        Constants.save.openBufferForWrite();
+        Constants.save.addLevelNumber(1);
+        Constants.save.saveMove(3);
+        break;
+      case BOOT:
+        GamePlay.startBoot(Constants.currentLevel);
+        Constants.save.openBufferForWrite();
+        Constants.save.addLevelNumber(1);
+        Constants.save.saveMove(2);
+        break;
+      case LEVELS:
+        Constants.menu.hide();
+        Constants.subMenuLevels.show();
+        break;
+      case LEVEL_1:
+        GamePlay.startGame(1);
+        Constants.save.openBufferForWrite();
+        Constants.save.addLevelNumber(1);
+        Constants.save.saveMove(3);
+        break;
+      case LEVEL_2:
+        GamePlay.startGame(2);
+        Constants.save.openBufferForWrite();
+        Constants.save.addLevelNumber(2);
+        Constants.save.saveMove(3);
+        break;
+      case PLAY_SAVED:
+        Constants.save.openBufferForRead();
+        GamePlay.startGame(Constants.save.getIntFromFile(), Constants.save.getIntFromFile());
+        break;
+      case SAVES:
+        Constants.save.showSaves();
+        break;
+      case BACK:
+        Constants.subMenuLevels.hide();
+        Constants.menu.show();
+      default:
+        break;
+    }
+  }
+
 }
 
