@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baa041b7_2a38ae9f",
+        "filename": "Enemy.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-04-25T05:18:56Z",
+      "side": 1,
+      "message": "то же",
+      "revId": "5700ee427e4a26abf972af30d90f13fbed995fc4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_eacac6a0",
+        "filename": "GamePlay.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-04-25T05:18:56Z",
+      "side": 1,
+      "message": "Boot?уверен?)",
+      "revId": "5700ee427e4a26abf972af30d90f13fbed995fc4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_aac5de8e",
+        "filename": "GamePlay.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-04-25T05:18:56Z",
+      "side": 1,
+      "message": "Уверен,что для этого нужно 4 отдельных метода?",
+      "revId": "5700ee427e4a26abf972af30d90f13fbed995fc4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_0ad4ca44",
+        "filename": "LevelData.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-04-25T05:18:56Z",
+      "side": 1,
+      "message": "Ну почему бы не объяснить,что это и зачем?",
+      "revId": "5700ee427e4a26abf972af30d90f13fbed995fc4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_4ae3f233",
+        "filename": "Saves.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1007753
+      },
+      "writtenOn": "2016-04-25T05:18:56Z",
+      "side": 1,
+      "message": "КОММЕНТЫ",
+      "revId": "5700ee427e4a26abf972af30d90f13fbed995fc4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
