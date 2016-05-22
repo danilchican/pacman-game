@@ -1,7 +1,10 @@
 package com.danilchican.pacman;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 
@@ -14,6 +17,7 @@ import javafx.scene.layout.Pane;
 public class Constants {
 
   public static boolean startGame = false;
+  public static boolean loseGame = false;
   public static boolean startBoot = false;
   public static boolean startReplay = false;
 
@@ -42,6 +46,7 @@ public class Constants {
   public static Scene main_scene = null; // main scene
   public static Pane mainRoot = new Pane(); // main screen
   public static Pane gameRoot = new Pane(); // game screen
+  public static Pane loadScreen = null; // game screen
 
   public static Character player = null; // the player
   public static Boot boot = null; // the boot
@@ -52,5 +57,13 @@ public class Constants {
 
   public static MenuBox menu = null; // main menu
   public static MenuBox subMenuLevels = null; // sub menu for selection levels
+
+  public static Thread GameThread = null; // thread for start game
+
+  public static GamePlay gamePlay = null; // GamePlay object
+
+  public static GameInfo[] games;
+
+  public static ImageView loader = null;
 
 }

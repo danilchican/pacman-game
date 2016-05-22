@@ -15,11 +15,11 @@ public class Boot extends Pane {
 
   private boolean isAlive = true;
   private boolean ready = true;
-  private int speedX;
-  private int speedY;
+  private int speedX = 0;
+  private int speedY = 1;
 
-  Image pacmanImg = new Image(getClass().getResourceAsStream("pacman.png"));
-  ImageView imgView = new ImageView(pacmanImg);
+  Image pacmanImg = null;
+  ImageView imgView = null;
 
   /**
    * Boot class constructor
@@ -28,16 +28,24 @@ public class Boot extends Pane {
    * @see Boot#Boot(Position)
    */
   public Boot(Position pos) {
-    ready = true;
-    isAlive = true;
+    pacmanImg = new Image(getClass().getResourceAsStream("pacman.png"));
+    imgView = new ImageView(pacmanImg);
+
+    imgView.setViewport(new Rectangle2D(0, 0, Constants.BlockHeight, Constants.BlockHeight));
+
     imgView.setFitHeight(Constants.EnemySize);
     imgView.setFitWidth(Constants.EnemySize);
-    imgView.setViewport(new Rectangle2D(0, 0, Constants.BlockHeight, Constants.BlockHeight));
+
+    this.getChildren().add(imgView);
     imgView.setVisible(true);
+
     pos.setPosition(this);
     speedX = 0;
     speedY = 1;
-    this.getChildren().add(imgView);
+
+    ready = true;
+    isAlive = true;
+
     Constants.gameRoot.getChildren().add(this);
   }
 
@@ -57,11 +65,14 @@ public class Boot extends Pane {
             GamePlay.updateCountFood();
           }
           if (movingRight) {
-            if (checkRight(platform) == false)
+            if (checkRight(platform) == false) {
               return;
+            }
           } else {
-            if (checkLeft(platform) == false)
+            if (checkLeft(platform) == false) {
               return;
+            }
+
           }
         }
       }
@@ -113,11 +124,13 @@ public class Boot extends Pane {
             GamePlay.updateCountFood();
           }
           if (movingDown) {
-            if (checkDown(platform) == false)
+            if (checkDown(platform) == false) {
               return;
+            }
           } else {
-            if (checkUp(platform) == false)
+            if (checkUp(platform) == false) {
               return;
+            }
           }
         }
       }
@@ -161,11 +174,14 @@ public class Boot extends Pane {
   public void move() {
     if (ready == true) {
       ready = false;
-      Constants.save.saveMoves(speedX, speedY);
-      if (speedX != 0)
+      Constants.save.saveMove(3);
+      if (speedX != 0) {
         moveX(speedX);
-      if (speedY != 0)
+      }
+      if (speedY != 0) {
         moveY(speedY);
+      }
+      Constants.save.saveMoves(this.getTranslateX(), this.getTranslateY());
       ready = true;
     }
 

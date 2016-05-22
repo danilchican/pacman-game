@@ -1,5 +1,6 @@
 package com.danilchican.pacman;
 
+import javafx.application.Platform;
 import javafx.geometry.*;
 import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
@@ -35,7 +36,14 @@ public class Character extends Pane {
     this.isAlive = true;
 
     this.getChildren().add(this.imageView);
-    Constants.gameRoot.getChildren().add(this);
+
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Constants.gameRoot.getChildren().add(Character.this);
+      }
+    });
+
   }
 
   /**

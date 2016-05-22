@@ -36,61 +36,40 @@ public class Game extends Application {
       if (isPressed(KeyCode.RIGHT)) {
         Constants.player.setScaleX(1);
         GamePlay.moveX(3);
-        Constants.save.saveMove(1);
-      } else {
-        Constants.save.saveMove(0);
       }
       if (isPressed(KeyCode.LEFT)) {
         Constants.player.setScaleX(-1);
         GamePlay.moveX(-3);
-        Constants.save.saveMove(1);
-      } else {
-        Constants.save.saveMove(0);
       }
       if (isPressed(KeyCode.UP)) {
         GamePlay.moveY(-3);
-        Constants.save.saveMove(1);
-      } else {
-        Constants.save.saveMove(0);
       }
       if (isPressed(KeyCode.DOWN)) {
         GamePlay.moveY(3);
-        Constants.save.saveMove(1);
-      } else {
-        Constants.save.saveMove(0);
       }
-      if (Constants.enemies.isEmpty())
+      Constants.save.saveMoves(Constants.player.getTranslateX(), Constants.player.getTranslateY());
+      if (Constants.enemies.isEmpty()) {
         return;
-      else {
+      } else {
         Constants.save.saveMove(4);
         for (Enemy enemy : Constants.enemies) {
           enemy.move();
         }
       }
 
-      if (!(Constants.player.isAlive())) {
-        MapGenerator.clearGameScene();
-        Constants.save.closeOutputStream();
-      }
-
       if ((Constants.CurrentCountBonuses == Constants.countFoodLevel)
           && Constants.player.isAlive()) {
-        Constants.save.closeOutputStream();
-        GamePlay.finishScreen();
-        MapGenerator.clearGameScene();
-
-        if (GamePlay.nextLevel(++Constants.currentLevel)) {
-          GamePlay.startGame(Constants.currentLevel);
-        } else
-          Constants.currentLevel = 1;
+        Constants.startGame = false;
+        RepresenterScreen.finishScreen();
       }
     } else if (Constants.startBoot) {
 
       Constants.boot.move();
 
-      if (Constants.enemies.isEmpty())
+      if (Constants.enemies.isEmpty()) {
         return;
-      else {
+      } else {
+        Constants.save.saveMove(4);
         for (Enemy enemy : Constants.enemies) {
           enemy.move();
         }
@@ -102,16 +81,15 @@ public class Game extends Application {
       }
 
       if ((Constants.CurrentCountBonuses == Constants.countFoodLevel) && Constants.boot.isAlive()) {
-
         Constants.save.closeOutputStream();
-        GamePlay.finishScreen();
+        RepresenterScreen.finishScreen();
         MapGenerator.clearGameScene();
 
         if (GamePlay.nextLevel(Constants.currentLevel++)) {
           GamePlay.startGame(Constants.currentLevel++);
-        } else
+        } else {
           Constants.currentLevel = 1;
-
+        }
       }
     } else if (Constants.startReplay) {
 
@@ -136,13 +114,14 @@ public class Game extends Application {
       if ((Constants.CurrentCountBonuses == Constants.countFoodLevel)
           && Constants.player.isAlive()) {
         Constants.save.closeOutputStream();
-        GamePlay.finishScreen();
+        RepresenterScreen.finishScreen();
         MapGenerator.clearGameScene();
 
         if (GamePlay.nextLevel(++Constants.currentLevel)) {
           GamePlay.startGame(Constants.currentLevel);
-        } else
+        } else {
           Constants.currentLevel = 1;
+        }
       }
     }
   }
@@ -157,11 +136,10 @@ public class Game extends Application {
     try {
       Constants.main_scene = new Scene(MenuBox.drawMenu());
       MenuBox.drawSubMenuLevels();
-
       MenuBox.setMenuOptions();
       GamePlay.setLevelsCount();
 
-      stage.setTitle("PacmanGame");
+      stage.setTitle("Pacman");
       stage.setMaxWidth(1000);
       stage.setMaxHeight(600);
       stage.setMinWidth(1000);

@@ -1,5 +1,6 @@
 package com.danilchican.pacman;
 
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
@@ -10,8 +11,7 @@ public class Enemy extends Pane {
   private int speedX;
   private int speedY;
 
-  Image pacmanImg = new Image(getClass().getResourceAsStream("pacman.png"));
-  ImageView imgView = new ImageView(pacmanImg);
+  Image pacmanImg = null;
 
   /**
    * Enemy class constructor
@@ -20,6 +20,22 @@ public class Enemy extends Pane {
    * @see Enemy#Enemy(Position)
    */
   public Enemy(Position characterPosition) {
+
+    double rand = Math.random();
+    String GhostName = "ghost";
+
+    if (rand > 0.45 && rand < 0.75) {
+      GhostName += "_violet.png";
+    } else if (rand < 0.45) {
+      GhostName += "_red.png";
+    } else {
+      GhostName += "_yellow.png";
+    }
+
+    pacmanImg = new Image(getClass().getResourceAsStream(GhostName));
+
+    ImageView imgView = new ImageView(pacmanImg);
+
     ready = true;
     imgView.setFitHeight(Constants.EnemySize);
     imgView.setFitWidth(Constants.EnemySize);
@@ -29,7 +45,14 @@ public class Enemy extends Pane {
     speedX = 0;
     speedY = 1;
     this.getChildren().add(imgView);
-    Constants.gameRoot.getChildren().add(this);
+
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Constants.gameRoot.getChildren().add(Enemy.this);
+      }
+    });
+
   }
 
   /**
@@ -41,12 +64,12 @@ public class Enemy extends Pane {
   private boolean isEatCharacter() {
     if (Constants.startBoot) {
       if (this.getBoundsInParent().intersects(Constants.boot.getBoundsInParent())) {
-        GamePlay.loseScreen();
+        RepresenterScreen.loseScreen();
         return true;
       }
     } else if (Constants.startGame) {
       if (this.getBoundsInParent().intersects(Constants.player.getBoundsInParent())) {
-        GamePlay.loseScreen();
+        RepresenterScreen.loseScreen();
         return true;
       }
     }
@@ -64,15 +87,18 @@ public class Enemy extends Pane {
     boolean movingRight = value > 0;
     for (int i = 0; i < Math.abs(value); i++) {
       for (Block platform : Constants.blocks) {
-        if (this.isEatCharacter())
+        if (this.isEatCharacter()) {
           return;
+        }
         if (this.getBoundsInParent().intersects(platform.getBoundsInParent())) {
           if (movingRight) {
-            if (checkRight(platform) == false)
+            if (checkRight(platform) == false) {
               return;
+            }
           } else {
-            if (checkLeft(platform) == false)
+            if (checkLeft(platform) == false) {
               return;
+            }
           }
         }
       }
@@ -122,11 +148,13 @@ public class Enemy extends Pane {
           return;
         if (this.getBoundsInParent().intersects(platform.getBoundsInParent())) {
           if (movingDown) {
-            if (checkDown(platform) == false)
+            if (checkDown(platform) == false) {
               return;
+            }
           } else {
-            if (checkUp(platform) == false)
+            if (checkUp(platform) == false) {
               return;
+            }
           }
         }
       }
@@ -170,11 +198,13 @@ public class Enemy extends Pane {
   public void move() {
     if (ready == true) {
       ready = false;
-      Constants.save.saveMoves(speedX, speedY);
-      if (speedX != 0)
+      if (speedX != 0) {
         moveX(speedX);
-      if (speedY != 0)
+      }
+      if (speedY != 0) {
         moveY(speedY);
+      }
+      Constants.save.saveMoves(this.getTranslateX(), this.getTranslateY());
       ready = true;
     }
   }
@@ -182,20 +212,12 @@ public class Enemy extends Pane {
   public void moveReplay() {
     if (ready == true) {
       ready = false;
-      if (Constants.save.getIntFromFile() == 1) {
-        moveX(2);
-        Constants.player.setScaleX(1);
-      }
-      if (Constants.save.getIntFromFile() == 1) {
-        moveX(-2);
-        Constants.player.setScaleX(-1);
-      }
-      if (Constants.save.getIntFromFile() == 1) {
-        moveY(2);
-      }
-      if (Constants.save.getIntFromFile() == 1) {
-        moveY(-2);
-      }
+      int x = Constants.save.getIntFromFile() + Constants.save.getIntFromFile() * 10
+          + Constants.save.getIntFromFile() * 100;
+      int y = Constants.save.getIntFromFile() + Constants.save.getIntFromFile() * 10
+          + Constants.save.getIntFromFile() * 100;
+      this.setTranslateX(x);
+      this.setTranslateY(y);
       ready = true;
     }
   }

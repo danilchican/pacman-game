@@ -26,7 +26,6 @@ public class MapGenerator {
 
     // add rectangle to gameRoot
     Constants.gameRoot.getChildren().addAll(rect);
-    Constants.main_scene.setRoot(Constants.gameRoot);
 
     // generate map blocks
     for (int i = 0; i < LevelData.levels[level - 1].length; i++) {
@@ -57,5 +56,6 @@ public class MapGenerator {
     Constants.blocks.clear();
     Constants.countFoodLevel = 0;
     Constants.CurrentCountBonuses = 0;
+    Constants.keys.clear();
   }
 }

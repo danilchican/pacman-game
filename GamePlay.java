@@ -1,6 +1,8 @@
 package com.danilchican.pacman;
 
+import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -15,6 +17,29 @@ public class GamePlay extends Pane {
   private static Label lblScore = null;
   private static Enemy localEnemy = null;
 
+  public void createThread(int index) {
+    Constants.GameThread = new Thread(new MyThread(index));
+    Constants.GameThread.start();
+  }
+
+  public static void freeThead() {
+    Constants.GameThread = null;
+  }
+
+  private class MyThread implements Runnable {
+
+    private int lvlIndex = 1;
+
+    MyThread(int index) {
+      lvlIndex = index;
+    }
+
+    public void run() {
+      RepresenterScreen.setLoadScreen();
+      startGame(lvlIndex);
+    }
+  }
+
   /**
    * Start the game by boot
    * 
@@ -22,16 +47,28 @@ public class GamePlay extends Pane {
    * @see GamePlay#startGame(int)
    */
   public static void startGame(int level) {
+    RepresenterScreen.clearLoadScreen();
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     Constants.currentLevel = level;
     setFoodCount(level);
     MapGenerator.generateMap(level);
 
-    lblScore = new Label("¬аш счЄт: " + Constants.CurrentCountBonuses);
+    lblScore = new Label("Your score: " + Constants.CurrentCountBonuses);
     lblScore.setFont(Font.font(22));
     lblScore.setTextFill(Color.WHITE);
     lblScore.setTranslateX(700);
     lblScore.setTranslateY(35);
-    Constants.gameRoot.getChildren().add(lblScore);
+
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Constants.gameRoot.getChildren().add(lblScore);
+      }
+    });
 
     Constants.player = new Character(new Position(1, 1));
 
@@ -44,21 +81,48 @@ public class GamePlay extends Pane {
       enemy.setSpeed(0, 2);
     }
 
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Constants.main_scene.setRoot(Constants.gameRoot); // set game screen
+      }
+    });
+
     localEnemy = null;
 
     Constants.main_scene.setOnKeyPressed(event -> Constants.keys.put(event.getCode(), true));
-    Constants.main_scene.setOnKeyReleased(event -> Constants.keys.put(event.getCode(), false));
+    Constants.main_scene.setOnKeyReleased(event -> {
+      if (event.getCode() == KeyCode.ESCAPE) {
+        if (Constants.loseGame) {
+          Constants.loseGame = false;
+          Constants.startGame = true;
+          return;
+        } else {
+          Constants.startGame = false;
+          Constants.loseGame = true;
+          GamePlay.freeThead();
+          return;
+        }
+      }
+      Constants.keys.put(event.getCode(), false);
+    });
 
     Constants.startGame = true;
   }
 
+
+  /**
+   * Start the game by boot
+   * 
+   * @param level generate map by level value
+   * @see GamePlay#startGame(int)
+   */
   public static void startGame(int level, int countOfEnemies) {
-    System.out.println(level);
     Constants.currentLevel = level;
     setFoodCount(level);
     MapGenerator.generateMap(level);
 
-    lblScore = new Label("¬аш счЄт: " + Constants.CurrentCountBonuses);
+    lblScore = new Label("Your score: " + Constants.CurrentCountBonuses);
     lblScore.setFont(Font.font(22));
     lblScore.setTextFill(Color.WHITE);
     lblScore.setTranslateX(700);
@@ -75,6 +139,7 @@ public class GamePlay extends Pane {
     for (Enemy enemy : Constants.enemies) {
       enemy.setSpeed(0, 2);
     }
+    Constants.main_scene.setRoot(Constants.gameRoot);
 
     localEnemy = null;
 
@@ -94,15 +159,12 @@ public class GamePlay extends Pane {
     setFoodCount(level);
     MapGenerator.generateMap(level);
 
-    lblScore = new Label("ђаш сч™т: " + Constants.CurrentCountBonuses);
+    lblScore = new Label("Your score: " + Constants.CurrentCountBonuses);
     lblScore.setFont(Font.font(22));
     lblScore.setTextFill(Color.WHITE);
     lblScore.setTranslateX(700);
     lblScore.setTranslateY(35);
     Constants.gameRoot.getChildren().add(lblScore);
-
-    Constants.boot = new Boot(new Position(1, 1));
-    Constants.boot.setSpeed(0, 2);
 
     for (int i = 0; i < 2; i++) {
       localEnemy = new Enemy(new Position(13, 2));
@@ -113,12 +175,17 @@ public class GamePlay extends Pane {
       enemy.setSpeed(0, 2);
     }
 
+    Constants.boot = new Boot(new Position(1, 1));
+    Constants.boot.setSpeed(0, 3);
+
     localEnemy = null;
 
     Constants.main_scene.setOnKeyPressed(event -> Constants.keys.put(event.getCode(), true));
     Constants.main_scene.setOnKeyReleased(event -> Constants.keys.put(event.getCode(), false));
 
     Constants.startBoot = true;
+
+    Constants.main_scene.setRoot(Constants.gameRoot);
   }
 
   /**
@@ -137,8 +204,9 @@ public class GamePlay extends Pane {
               platform.eatFood(Block.BlockType.CLEARED);
               updateCountFood();
             }
-            if (checkRight(platform) == false)
+            if (checkRight(platform) == false) {
               return;
+            }
           }
         } else {
           if (Constants.player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
@@ -146,8 +214,9 @@ public class GamePlay extends Pane {
               platform.eatFood(Block.BlockType.CLEARED);
               updateCountFood();
             }
-            if (checkLeft(platform) == false)
+            if (checkLeft(platform) == false) {
               return;
+            }
           }
         }
       }
@@ -172,8 +241,9 @@ public class GamePlay extends Pane {
               platform.eatFood(Block.BlockType.CLEARED);
               updateCountFood();
             }
-            if (checkDown(platform) == false)
+            if (!checkDown(platform)) {
               return;
+            }
           }
         } else {
           if (Constants.player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
@@ -181,8 +251,9 @@ public class GamePlay extends Pane {
               platform.eatFood(Block.BlockType.CLEARED);
               updateCountFood();
             }
-            if (checkUp(platform) == false)
+            if (!checkUp(platform)) {
               return;
+            }
           }
         }
       }
@@ -202,10 +273,12 @@ public class GamePlay extends Pane {
         && (platform.getType() == Block.BlockType.BRICK)) {
       Constants.player.setTranslateX(Constants.player.getTranslateX() - 1);
       if (Constants.player.getTranslateY() + Constants.CharacterSize - 5 <= platform
-          .getTranslateY())
+          .getTranslateY()) {
         Constants.player.setTranslateY(Constants.player.getTranslateY() - 1);
-      if (Constants.player.getTranslateY() >= platform.getTranslateY() + Constants.CharacterSize)
+      }
+      if (Constants.player.getTranslateY() >= platform.getTranslateY() + Constants.CharacterSize) {
         Constants.player.setTranslateY(Constants.player.getTranslateY() + 1);
+      }
       return false;
     }
     return true;
@@ -223,10 +296,12 @@ public class GamePlay extends Pane {
         && (platform.getType() == Block.BlockType.BRICK)) {
       Constants.player.setTranslateX(Constants.player.getTranslateX() + 1);
       if (Constants.player.getTranslateY() + Constants.CharacterSize - 5 <= platform
-          .getTranslateY())
+          .getTranslateY()) {
         Constants.player.setTranslateY(Constants.player.getTranslateY() - 1);
-      if (Constants.player.getTranslateY() >= platform.getTranslateY() + Constants.CharacterSize)
+      }
+      if (Constants.player.getTranslateY() >= platform.getTranslateY() + Constants.CharacterSize) {
         Constants.player.setTranslateY(Constants.player.getTranslateY() + 1);
+      }
       return false;
     }
     return true;
@@ -243,11 +318,14 @@ public class GamePlay extends Pane {
     if ((Constants.player.getTranslateY() + Constants.CharacterSize == platform.getTranslateY())
         && (platform.getType() == Block.BlockType.BRICK)) {
       Constants.player.setTranslateY(Constants.player.getTranslateY() - 1);
-      if (Constants.player.getTranslateX() >= platform.getTranslateX() + Constants.BlockHeight - 5)
+      if (Constants.player.getTranslateX() >= platform.getTranslateX() + Constants.BlockHeight
+          - 5) {
         Constants.player.setTranslateX(Constants.player.getTranslateX() + 1);
+      }
       if (Constants.player.getTranslateX() + Constants.CharacterSize - 5 <= platform
-          .getTranslateX())
+          .getTranslateX()) {
         Constants.player.setTranslateX(Constants.player.getTranslateX() - 1);
+      }
       return false;
     }
     return true;
@@ -264,11 +342,14 @@ public class GamePlay extends Pane {
     if ((Constants.player.getTranslateY() == platform.getTranslateY() + Constants.BlockHeight)
         && (platform.getType() == Block.BlockType.BRICK)) {
       Constants.player.setTranslateY(Constants.player.getTranslateY() + 1);
-      if (Constants.player.getTranslateX() >= platform.getTranslateX() + Constants.BlockHeight - 5)
+      if (Constants.player.getTranslateX() >= platform.getTranslateX() + Constants.BlockHeight
+          - 5) {
         Constants.player.setTranslateX(Constants.player.getTranslateX() + 1);
+      }
       if (Constants.player.getTranslateX() + Constants.CharacterSize - 5 <= platform
-          .getTranslateX())
+          .getTranslateX()) {
         Constants.player.setTranslateX(Constants.player.getTranslateX() - 1);
+      }
       return false;
     }
     return true;
@@ -310,7 +391,13 @@ public class GamePlay extends Pane {
    */
   public static void updateCountFood() {
     Constants.CurrentCountBonuses++;
-    lblScore.setText("¬аш счЄт: " + Constants.CurrentCountBonuses);
+
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        lblScore.setText("Your score: " + Constants.CurrentCountBonuses);
+      }
+    });
   }
 
   /**
@@ -325,49 +412,26 @@ public class GamePlay extends Pane {
   }
 
   /**
-   * Display finish screen
    * 
-   * @see GamePlay#finishScreen()
-   */
-  public static void finishScreen() {
-    System.out.println("You win!");
-  }
-
-  /**
-   * Display lose screen
+   * Replay game
    * 
-   * @see GamePlay#loseScreen()
    */
-  public static void loseScreen() {
-    System.out.println("Game over");
-
-    if (Constants.startGame || Constants.startReplay)
-      Constants.player.setAlive(false);
-    else if (Constants.startBoot)
-      Constants.boot.setAlive(false);
-
-    Constants.startGame = false;
-    Constants.startBoot = false;
-    Constants.startReplay = false;
-
-    Constants.currentLevel = 1;
-  }
-
   public static void moveReplay() {
-    if (Constants.save.getIntFromFile() == 1) {
-      moveX(Constants.speedOfHero);
-      Constants.player.setScaleX(1);
-    }
-    if (Constants.save.getIntFromFile() == 1) {
-      moveX(-Constants.speedOfHero);
-      Constants.player.setScaleX(-1);
-    }
-    if (Constants.save.getIntFromFile() == 1) {
-      moveY(-Constants.speedOfHero);
-    }
-    if (Constants.save.getIntFromFile() == 1) {
-      moveY(Constants.speedOfHero);
+    int x = Constants.save.getIntFromFile() + Constants.save.getIntFromFile() * 10
+        + Constants.save.getIntFromFile() * 100;
+    int y = Constants.save.getIntFromFile() + Constants.save.getIntFromFile() * 10
+        + Constants.save.getIntFromFile() * 100;
+    Constants.player.setTranslateX(x);
+    Constants.player.setTranslateY(y);
+
+    for (Block platform : Constants.blocks) {
+      if (Constants.player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+        if (Block.isFood(platform)) {
+          platform.eatFood(Block.BlockType.CLEARED);
+          updateCountFood();
+          return;
+        }
+      }
     }
   }
-
 }

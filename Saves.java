@@ -10,6 +10,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * 
+ * Class which saves your current game
+ * 
+ * @author Vlad
+ * @version 1.0
+ */
 public class Saves {
   BufferedWriter out = null;
   BufferedReader in = null;
@@ -17,19 +24,30 @@ public class Saves {
   FileChooser tr = new FileChooser();
   File dialog = new File("SaveGames");
   File[] allFiles;
-  
+
   static int countOfSaves = 0;
 
+  /**
+   * 
+   * Constructor of this class
+   * 
+   */
   Saves() {
     allFiles = new File("SaveGames").listFiles();
     countOfSaves = allFiles.length;
     tr.setInitialDirectory(dialog);
   }
 
+  /**
+   * 
+   * Method open buffer for write saving
+   * 
+   */
   public void openBufferForWrite() {
-    if (out != null)
+    if (out != null) {
       return;
-    
+    }
+
     countOfSaves++;
     cleanSave(countOfSaves);
     String path = new String("SaveGames\\moveplayer_number_" + countOfSaves + ".c");
@@ -41,9 +59,15 @@ public class Saves {
     }
   }
 
+  /**
+   * 
+   * Method open buffer for read saved game
+   * 
+   */
   public void openBufferForRead() {
-    if (in != null)
+    if (in != null) {
       return;
+    }
     try {
       in = new BufferedReader(new InputStreamReader(new FileInputStream(tr.showOpenDialog(null))));
     } catch (IOException e) {
@@ -51,6 +75,13 @@ public class Saves {
     }
   }
 
+  /**
+   * 
+   * Save the current moving way
+   * 
+   * @param direction
+   * @return int
+   */
   public int saveMove(int direction) {
     try {
       if (out == null) {
@@ -63,9 +94,44 @@ public class Saves {
     return direction;
   }
 
+  /**
+   * 
+   * Calculate moving way and call function for write it
+   * 
+   * @param speedX
+   * @param speedY
+   * @return int
+   */
+  public int saveMoves(double posX, double posY) {
+    if (out == null) {
+      return -2;
+    }
+
+    Constants.save.saveMove((int) (posX % 10));
+    posX /= 10;
+    Constants.save.saveMove((int) (posX % 10));
+    posX /= 10;
+    Constants.save.saveMove((int) (posX % 10));
+
+    Constants.save.saveMove((int) (posY % 10));
+    posY /= 10;
+    Constants.save.saveMove((int) (posY % 10));
+    posY /= 10;
+    Constants.save.saveMove((int) (posY % 10));
+
+    return 1;
+  }
+
+  /**
+   * 
+   * Calculate moving way and call function for write it
+   * 
+   * @param speedX
+   * @param speedY
+   * @return int
+   */
   public int saveMoves(int speedX, int speedY) {
     if (out == null) {
-      System.out.println("nullable");
       return -2;
     }
 
@@ -82,12 +148,12 @@ public class Saves {
       saveMove(0);
     }
     if (speedY > 0) {
-      saveMove(1);
       saveMove(0);
+      saveMove(1);
     }
     if (speedY < 0) {
-      saveMove(0);
       saveMove(1);
+      saveMove(0);
     }
     if (speedY == 0) {
       saveMove(0);
@@ -97,23 +163,39 @@ public class Saves {
     return 1;
   }
 
+  /**
+   * 
+   * Chechout new line
+   * 
+   */
   public void newLine() {
     try {
-      if (out != null)
+      if (out != null) {
         out.newLine();
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
+  /**
+   * 
+   * Get int from file and return it
+   * 
+   * @return int
+   */
   public int getIntFromFile() {
     try {
-      if (in == null)
+      if (in == null) {
         return -2;
+      }
+
       int temp = in.read();
-      if (temp == 6) {
+
+      if (temp == -1) {
         closeInputStream();
       }
+
       return temp;
     } catch (IOException e) {
       e.printStackTrace();
@@ -121,10 +203,15 @@ public class Saves {
     return 0;
   }
 
+  /**
+   * 
+   * Close output stream
+   * 
+   */
   public void closeOutputStream() {
     try {
       if (out != null) {
-        saveMove(6);
+        saveMove(-1);
         out.close();
         out = null;
       }
@@ -133,6 +220,11 @@ public class Saves {
     }
   }
 
+  /**
+   * 
+   * Close input stream
+   * 
+   */
   public void closeInputStream() {
     try {
       if (in != null) {
@@ -144,14 +236,23 @@ public class Saves {
     }
   }
 
+
+  /**
+   * 
+   * Write level number to saving file
+   * 
+   * @param temp
+   */
   public void addLevelNumber(int temp) {
-    try {
-      out.write(temp);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    saveMove(temp);
   }
 
+  /**
+   * 
+   * Clean file content before write
+   * 
+   * @param number
+   */
   public void cleanSave(int number) {
     String path = new String("SaveGames\\moveplayer_number_" + number + ".c");
     try {
@@ -163,6 +264,11 @@ public class Saves {
     }
   }
 
+  /**
+   * 
+   * Show all saved games
+   * 
+   */
   public void showSaves() {
     Stage saves;
     saves = new Stage();
@@ -186,5 +292,87 @@ public class Saves {
     Scene saveScene = new Scene(saveRoot);
     saves.setScene(saveScene);
     saves.show();
+  }
+
+  private int readInt() {
+    int temp = -2;
+    try {
+      temp = in.read();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return temp;
+  }
+
+  public void convertSavesInToInfo() {
+    allFiles = new File("SaveGames").listFiles();
+
+    Constants.games = new GameInfo[allFiles.length];
+
+    int count = 0;
+    int tmp = -2;
+    int numberOfLevel;
+    int stepsCountR, stepsCountL, stepsCountU, stepsCountD;
+    int enemyStepsCount;
+
+    for (File temp : allFiles) {
+      stepsCountR = 0;
+      stepsCountL = 0;
+      stepsCountU = 0;
+      stepsCountD = 0;
+      enemyStepsCount = 0;
+
+      try {
+        in = new BufferedReader(new InputStreamReader(new FileInputStream(temp)));
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      }
+      numberOfLevel = readInt();
+
+      do {
+        tmp = readInt();
+
+        switch (tmp) {
+          case 3:
+            if (readInt() == 1) {
+              stepsCountR++;
+            }
+            if (readInt() == 1) {
+              stepsCountL++;
+            }
+            if (readInt() == 1) {
+              stepsCountU++;
+            }
+            if (readInt() == 1) {
+              stepsCountD++;
+            }
+            break;
+          case 4:
+            readInt();
+            if (readInt() == -2 || readInt() == -2 || readInt() == -2 || readInt() == -2
+                || readInt() == -2 || readInt() == -2) {
+              return;
+            } else {
+              enemyStepsCount++;
+            }
+            break;
+          case 5:
+            readInt();
+            if (readInt() == -2 || readInt() == -2 || readInt() == -2 || readInt() == -2
+                || readInt() == -2 || readInt() == -2) {
+              return;
+            }
+            break;
+        }
+
+      } while (tmp != -1);
+
+      closeInputStream();
+
+      Constants.games[count] = new GameInfo(temp.getName(), stepsCountL, stepsCountR, stepsCountU,
+          stepsCountD, enemyStepsCount, numberOfLevel + 1);
+
+      count++;
+    }
   }
 }

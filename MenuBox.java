@@ -30,13 +30,13 @@ public class MenuBox extends StackPane {
    * @param items to display the MenuBox
    * @see MenuBox#MenuBox(MenuItem...)
    */
+  @SuppressWarnings("static-access")
   public MenuBox(MenuItem... items) {
-
     DropShadow shadow = new DropShadow(7, 5, 0, Color.BLACK);
     shadow.setSpread(0.8);
     VBox vbox = new VBox();
     vbox.setAlignment(Pos.TOP_CENTER);
-    vbox.setPadding(new Insets(320, 0, 0, 350));
+    vbox.setPadding(new Insets(280, 0, 0, 350));
 
     VBox box = new VBox();
     box.setAlignment(Pos.TOP_CENTER);
@@ -103,9 +103,7 @@ public class MenuBox extends StackPane {
         } else if (Constants.menu.isOpened() && !(Constants.subMenuLevels.isOpened())) {
           Constants.menu.hide();
           Constants.subMenuLevels.show();
-        } else
-          System.out.println("other");
-
+        }
       }
     });
   }
@@ -128,8 +126,10 @@ public class MenuBox extends StackPane {
 
     Constants.menu = new MenuBox(new MenuItem("NEW GAME", MenuItem.Options.NEW_GAME),
         new MenuItem("LEVELS", MenuItem.Options.LEVELS),
-        new MenuItem("PLAY_SAVED", MenuItem.Options.PLAY_SAVED),
+        new MenuItem("PLAY SAVED", MenuItem.Options.PLAY_SAVED),
         new MenuItem("BOOT", MenuItem.Options.BOOT), new MenuItem("SAVES", MenuItem.Options.SAVES),
+        new MenuItem("SORTING", MenuItem.Options.SORTING),
+        new MenuItem("SORTING LIST", MenuItem.Options.SORTING_LIST),
         new MenuItem("QUIT", MenuItem.Options.QUIT));
 
     Constants.mainRoot.getChildren().add(Constants.menu);

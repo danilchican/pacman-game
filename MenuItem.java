@@ -1,11 +1,13 @@
 package com.danilchican.pacman;
 
-import javafx.animation.*;
-import javafx.scene.text.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 /**
@@ -19,7 +21,7 @@ public class MenuItem extends StackPane {
   private Rectangle menuRect;
 
   public static enum Options {
-    NEW_GAME, LEVELS, BOOT, BACK, QUIT, LEVEL_1, LEVEL_2, SAVES, PLAY_SAVED
+    NEW_GAME, LEVELS, BOOT, BACK, QUIT, LEVEL_1, LEVEL_2, SAVES, PLAY_SAVED, SORTING, SORTING_LIST
   }
 
   /**
@@ -88,12 +90,14 @@ public class MenuItem extends StackPane {
    * @see MenuItem#setActionMenu(Options)
    */
   private void setActionMenu(Options type) {
+
     switch (type) {
       case QUIT:
         System.exit(0);
         break;
       case NEW_GAME:
-        GamePlay.startGame(1);
+        Constants.gamePlay = new GamePlay();
+        Constants.gamePlay.createThread(1);
         Constants.save.openBufferForWrite();
         Constants.save.addLevelNumber(1);
         Constants.save.saveMove(3);
@@ -109,13 +113,15 @@ public class MenuItem extends StackPane {
         Constants.subMenuLevels.show();
         break;
       case LEVEL_1:
-        GamePlay.startGame(1);
+        Constants.gamePlay = new GamePlay();
+        Constants.gamePlay.createThread(1);
         Constants.save.openBufferForWrite();
         Constants.save.addLevelNumber(1);
         Constants.save.saveMove(3);
         break;
       case LEVEL_2:
-        GamePlay.startGame(2);
+        Constants.gamePlay = new GamePlay();
+        Constants.gamePlay.createThread(2);
         Constants.save.openBufferForWrite();
         Constants.save.addLevelNumber(2);
         Constants.save.saveMove(3);
@@ -126,6 +132,14 @@ public class MenuItem extends StackPane {
         break;
       case SAVES:
         Constants.save.showSaves();
+        break;
+      case SORTING:
+        Thread sorting = new Thread(new LoadThread(true, "loading.gif", 70, 70, 70, 70, 900, 15));
+        sorting.start();
+        break;
+      case SORTING_LIST:
+        JavaSorting getList = new JavaSorting();
+        getList.showSortingList();
         break;
       case BACK:
         Constants.subMenuLevels.hide();

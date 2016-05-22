@@ -8,11 +8,11 @@ package com.danilchican.pacman;
  */
 public class Position {
 
-  int column = 1;
-  int row = 1;
+  private int column = 1;
+  private int row = 1;
 
-  int x;
-  int y;
+  private int x;
+  private int y;
 
   /**
    * Set info about new position
@@ -25,8 +25,8 @@ public class Position {
     this.column = column;
     this.row = row;
 
-    this.y = Constants.MARGIN_TOP + row * Constants.BlockWidth;
-    this.x = Constants.MARGIN_LEFT_RIGHT + column * Constants.BlockHeight;
+    this.y = Constants.MARGIN_TOP + this.row * Constants.BlockWidth;
+    this.x = Constants.MARGIN_LEFT_RIGHT + this.column * Constants.BlockHeight;
   }
 
   /**

@@ -1,5 +1,6 @@
 package com.danilchican.pacman;
 
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,14 +23,15 @@ public class Block extends Pane {
   private BlockType type;
 
   /**
-   * Class constructor 
+   * Class constructor
    * 
-   * @param blockType  set type of block
-   * @param x          set x position for block
-   * @param y          set y position for block
+   * @param blockType set type of block
+   * @param x set x position for block
+   * @param y set y position for block
    * @see Block#Block(BlockType, int, int)
    */
   public Block(BlockType blockType, int x, int y) {
+
     this.type = blockType;
 
     switch (type) {
@@ -69,7 +71,13 @@ public class Block extends Pane {
     }
 
     this.getChildren().add(block);
-    Constants.gameRoot.getChildren().add(this);
+
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        Constants.gameRoot.getChildren().add(Block.this);
+      }
+    });
   }
 
   /**
@@ -98,7 +106,7 @@ public class Block extends Pane {
    * Checkout block by type of food
    * 
    * @param block
-   * @return boolean of compare block types  
+   * @return boolean of compare block types
    * @see Block#isFood(Block)
    */
   public static boolean isFood(Block block) {
